@@ -52,13 +52,44 @@ function isSecureOrigin(): boolean {
  * </AuthProvider>
  * ```
  */
+/**
+ * Determines if the application is using IAM Service for authentication
+ * IAM Service is indicated when redirect URI points to /auth/callback
+ */
+function isUsingIAMService(config: Auth0Config): boolean {
+  const redirectUri = config.redirectUri || (typeof window !== 'undefined' ? window.location.origin + '/callback' : '');
+  return redirectUri.includes('/auth/callback');
+}
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children, config }) => {
   // Check if we're on a secure origin
   const secure = isSecureOrigin();
   
+  // Check if Auth0 configuration is provided
+  const hasAuth0Config = config.domain && config.clientId;
+  
+  // Check if app is using IAM Service (BFF pattern)
+  // When using IAM Service, Auth0 SDK is not needed as IAM handles all OAuth flows
+  const usingIAMService = isUsingIAMService(config);
+  
+  // Skip Auth0 SDK initialization if:
+  // 1. App is using IAM Service (redirect URI points to /auth/callback)
+  // 2. Auth0 config is missing (app uses alternative auth method)
+  if (usingIAMService || !hasAuth0Config) {
+    // This is expected and correct when using IAM Service
+    // IAM Service handles all OAuth flows, so Auth0 SDK is not needed
+    if (process.env.NODE_ENV === 'development' && usingIAMService) {
+      console.info(
+        'ℹ️  Auth0 Provider skipped: App is using IAM Service for authentication. ' +
+        'IAM Service handles OAuth flows, so Auth0 SDK initialization is not needed.'
+      );
+    }
+    return <>{children}</>;
+  }
+  
+  // For HTTP (non-localhost), skip Auth0 initialization
+  // Auth0 requires HTTPS or localhost for Web Crypto API
   if (!secure) {
-    // For HTTP (non-localhost), skip Auth0 initialization
-    // This allows the app to work in development environments without HTTPS
     console.warn(
       '⚠️  Auth0 disabled: App is running on HTTP (non-localhost). ' +
       'Auth0 requires HTTPS or localhost. The app will work without authentication.'
@@ -66,6 +97,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, config }) 
     return <>{children}</>;
   }
   
+  // Initialize Auth0 SDK for apps that use Auth0 directly (not IAM Service)
   return (
     <Auth0ProviderBase
       domain={config.domain}
