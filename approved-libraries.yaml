@@ -15,9 +15,9 @@ libraries:
     description: React DOM rendering
   
   - name: typescript
-    version: v4.9.5
+    version: v5.9.3
     category: Core React & TypeScript
-    description: TypeScript compiler
+    description: TypeScript compiler (upgraded from 4.9.5)
   
   - name: "@types/react"
     version: v18.2.0
@@ -103,6 +103,87 @@ libraries:
     version: "^2.0.0"
     category: Authentication
     description: Official Auth0 React SDK (wrapped by @exbrain/common-react)
+
+  # Framework
+  - name: next
+    version: "^16.0.10"
+    category: Framework
+    description: Next.js 16 App Router framework
+
+  # UI Components
+  - name: "@mui/material"
+    version: "^6.0.0"
+    category: UI Components
+    description: Material-UI (MUI) component library
+  
+  - name: "@emotion/react"
+    version: "^11.13.0"
+    category: UI Components
+    description: Emotion React (peer dependency for Material-UI)
+  
+  - name: "@emotion/styled"
+    version: "^11.13.0"
+    category: UI Components
+    description: Emotion Styled (peer dependency for Material-UI)
+  
+  - name: "@mui/system"
+    version: "^6.0.0"
+    category: UI Components
+    description: Material-UI system utilities (peer dependency for Material-UI)
+
+  # State Management
+  - name: "@reduxjs/toolkit"
+    version: "^2.2.0"
+    category: State Management
+    description: Redux Toolkit for state management
+  
+  - name: react-redux
+    version: "^9.1.0"
+    category: State Management
+    description: React bindings for Redux (peer dependency for Redux Toolkit)
+  
+  - name: redux
+    version: "^5.0.0"
+    category: State Management
+    description: Redux core library (peer dependency for Redux Toolkit)
+
+  # Styling
+  - name: tailwindcss
+    version: "^4.0.0"
+    category: Styling
+    description: Tailwind CSS v4 utility-first CSS framework
+  
+  - name: postcss
+    version: "^8.4.0"
+    category: Styling
+    description: PostCSS (peer dependency for Tailwind CSS)
+  
+  - name: autoprefixer
+    version: "^10.4.0"
+    category: Styling
+    description: Autoprefixer (peer dependency for Tailwind CSS)
+
+  # Forms & Validation
+  - name: react-hook-form
+    version: "^7.53.0"
+    category: Forms & Validation
+    description: React Hook Form for form state management
+  
+  - name: zod
+    version: "^3.24.0"
+    category: Forms & Validation
+    description: TypeScript-first schema validation library
+  
+  - name: "@hookform/resolvers"
+    version: "^3.9.0"
+    category: Forms & Validation
+    description: React Hook Form resolvers (for Zod integration)
+
+  # Data Fetching
+  - name: "@tanstack/react-query"
+    version: "^5.62.0"
+    category: Data Fetching
+    description: TanStack React Query for data fetching and caching
 
 
 
