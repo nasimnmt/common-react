@@ -35,7 +35,7 @@ export const StatusBanner: React.FC<StatusBannerProps> = ({
         <span className="exbrain-status-banner-icon" aria-hidden="true">
           {getIcon()}
         </span>
-        <span className="exbrain-status-banner-message">{message}</span>
+        <span className="exbrain-status-banner-message">{String(message || '')}</span>
         <div className="exbrain-status-banner-actions">
           {onRetry && (
             <button
