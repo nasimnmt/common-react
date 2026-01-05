@@ -116,6 +116,11 @@ libraries:
     category: UI Components
     description: Material-UI (MUI) component library
   
+  - name: "@mui/icons-material"
+    version: "^6.0.0"
+    category: UI Components
+    description: Material-UI (MUI) icons library
+  
   - name: "@emotion/react"
     version: "^11.13.0"
     category: UI Components
