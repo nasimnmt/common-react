@@ -29,6 +29,8 @@ interface EnvironmentBannerProps {
   hideInProduction?: boolean;
   /** Custom z-index for the banner (default: 999999) */
   zIndex?: number;
+  /** Build version (semver) to show on the ribbon e.g. "1.2.3". Set from build env (e.g. VITE_APP_VERSION). */
+  version?: string;
 }
 
 interface EnvironmentConfig {
@@ -144,6 +146,7 @@ export const EnvironmentBanner: React.FC<EnvironmentBannerProps> = ({
   environment,
   hideInProduction = false,
   zIndex = 999999,
+  version,
 }) => {
   const detectedEnv = environment || detectEnvironment();
   
@@ -159,6 +162,7 @@ export const EnvironmentBanner: React.FC<EnvironmentBannerProps> = ({
   }
 
   const config = ENVIRONMENT_CONFIGS[detectedEnv];
+  const label = version ? `${config.label} | v${version}` : config.label;
 
   return (
     <>
@@ -181,7 +185,7 @@ export const EnvironmentBanner: React.FC<EnvironmentBannerProps> = ({
           boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
         }}
       >
-        {config.label}
+        {label}
       </div>
       {/* Spacer to push content down */}
       <div style={{ height: '28px' }} />

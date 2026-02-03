@@ -22,8 +22,23 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 const isBrowser = typeof window !== 'undefined';
 
 /**
+ * Get log shipping endpoint from env (optional).
+ * When unset or empty, log shipping is disabled (no POST, no 404).
+ * Set NEXT_PUBLIC_LOG_SHIPPING_URL or REACT_APP_LOG_SHIPPING_URL to enable (e.g. '/api/logs').
+ */
+function getLogShippingEndpoint(): string | null {
+  const url =
+    (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_LOG_SHIPPING_URL) ||
+    (typeof process !== 'undefined' && process.env?.REACT_APP_LOG_SHIPPING_URL);
+  if (url && typeof url === 'string' && url.trim() !== '') {
+    return url.trim();
+  }
+  return null;
+}
+
+/**
  * Client-side log batching and shipping
- * Batches logs and sends them to /api/logs endpoint for aggregation
+ * Batches logs and sends them to the configured endpoint (when set).
  */
 class ClientLogShipper {
   private logQueue: Array<{
@@ -35,7 +50,10 @@ class ClientLogShipper {
   private flushTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly BATCH_SIZE = 10;
   private readonly FLUSH_INTERVAL_MS = 5000; // 5 seconds
-  private readonly LOG_ENDPOINT = '/api/logs';
+  private readonly endpoint: string;
+  constructor(endpoint: string) {
+    this.endpoint = endpoint;
+  }
 
   /**
    * Add log to queue and schedule flush if needed
@@ -92,10 +110,10 @@ class ClientLogShipper {
       // Try sendBeacon first (more reliable, works during page unload)
       if (navigator.sendBeacon) {
         const blob = new Blob([payload], { type: 'application/json' });
-        navigator.sendBeacon(this.LOG_ENDPOINT, blob);
+        navigator.sendBeacon(this.endpoint, blob);
       } else {
         // Fallback to fetch (may fail during page unload)
-        fetch(this.LOG_ENDPOINT, {
+        fetch(this.endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -147,15 +165,18 @@ let logShipper: ClientLogShipper | null = null;
 
 /**
  * Get or create log shipper instance (lazy initialization)
- * Only creates instance when actually needed (when first log is shipped)
+ * Only creates instance when endpoint is configured and when first log is shipped
  */
 function getLogShipper(): ClientLogShipper | null {
   if (!isBrowser || typeof window === 'undefined') {
     return null;
   }
-  
+  const endpoint = getLogShippingEndpoint();
+  if (!endpoint) {
+    return null;
+  }
   if (!logShipper) {
-    logShipper = new ClientLogShipper();
+    logShipper = new ClientLogShipper(endpoint);
     
     // Register page unload handlers once when shipper is first created
     window.addEventListener('beforeunload', () => {
